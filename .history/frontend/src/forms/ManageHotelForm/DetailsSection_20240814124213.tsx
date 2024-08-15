@@ -58,7 +58,7 @@ const DetailsSection = () => {
         )}
       </label>
       <label className="text-gray-700 text-sm font-bold max-w-[50%]">
-        Price Per Night (Rs)
+        Price Per Night (₹)
         <input
           type="number"
           min={1}

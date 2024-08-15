@@ -23,7 +23,7 @@ const MyHotels = () => {
         <h1 className="text-3xl font-bold">My Hotels</h1>
         <Link
           to="/add-hotel"
-          className="flex bg-rose-600 text-white text-xl font-bold p-2 hover:bg-rose-500 rounded-sm"
+          className="flex bg-rose-600 text-white text-xl font-bold p-2 hover:bg-rose-500"
         >
           Add Hotel
         </Link>
@@ -46,7 +46,7 @@ const MyHotels = () => {
                 {hotel.type}
               </div>
               <div className="border border-slate-300 rounded-sm p-3 flex items-center">
-                <BiMoney className="mr-1" />Rs. {hotel.pricePerNight} per night
+                <BiMoney className="mr-1" />Rs.{hotel.pricePerNight} per night
               </div>
               <div className="border border-slate-300 rounded-sm p-3 flex items-center">
                 <BiHotel className="mr-1" />
@@ -60,7 +60,7 @@ const MyHotels = () => {
             <span className="flex justify-end">
               <Link
                 to={`/edit-hotel/${hotel._id}`}
-                className="flex bg-rose-600 text-white text-xl font-bold p-2 hover:bg-rose-500 rounded-sm"
+                className="flex bg-rose-600 text-white text-xl font-bold p-2 hover:bg-rose-500"
               >
                 View Details
               </Link>

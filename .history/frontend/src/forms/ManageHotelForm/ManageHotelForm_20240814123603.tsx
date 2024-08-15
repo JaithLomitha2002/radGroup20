@@ -78,9 +78,9 @@ const ManageHotelForm = ({ onSave, isLoading, hotel }: Props) => {
         <ImagesSection />
         <span className="flex justify-end">
           <button
-            disabled={isLoading} //when accessing multiple users using the same function
+            disabled={isLoading}
             type="submit"
-            className="bg-rose-700 text-white p-3 font-bold hover:bg-indigo-500 text-1xl rounded-sm ">
+            className="bg-rose-700 text-white p-3 font-bold hover:bg-indigo-500 text-1xl rounded-sm">
             {isLoading ? "Saving..." : "Save"}
           </button>
         </span>

@@ -17,7 +17,8 @@ const FacilitiesSection = () => {
             <input
               type="checkbox"
               value={facility}
-              {...register("facilities", { validate: (facilities) => {
+              {...register("facilities", {
+                validate: (facilities) => {
                   if (facilities && facilities.length > 0) {
                     return true;
                   } else {
