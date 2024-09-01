@@ -1,0 +1,15 @@
+import express, {Request, Response} from "express";
+import Hotel from "../models/hotel";
+
+const router = express.Router();
+
+router.get("/search", async (req: Request, res: Response) => {
+    try{
+        const hotels = await Hotel.find();
+
+    }catch(error){
+        console.log("error", error);
+        res.status(500).json({message:"Something went wrong"});
+
+    }
+});
