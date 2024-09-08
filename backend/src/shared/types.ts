@@ -4,6 +4,11 @@ export type UserType = {
   password: string;
   firstName: string;
   lastName: string;
+<<<<<<< HEAD
+=======
+  telephone: string;
+  address: string;
+>>>>>>> 1442f075dde7c858a4560f7242867403cb6840bb
 };
 
 
