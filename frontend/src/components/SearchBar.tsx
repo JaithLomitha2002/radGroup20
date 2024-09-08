@@ -27,6 +27,15 @@ const SearchBar = () => {
     navigate("/search");
   };
 
+  const handleClear = () => {
+    const currentDate = new Date();
+    setDestination("");
+    setCheckIn(currentDate);
+    setCheckOut(currentDate);
+    setAdultCount(1);
+    setChildCount(0);
+  };
+  
   const minDate = new Date();
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 1);
@@ -102,7 +111,10 @@ const SearchBar = () => {
         <button className="col-span-1 sm:col-span-1 w-full bg-indigo-600 text-white h-full p-2 font-bold text-xl hover:bg-blue-500 rounded-sm">
           Search
         </button>
-        <button className="col-span-1 sm:col-span-1 w-full bg-red-600 text-white h-full p-2 font-bold text-xl hover:bg-red-500 rounded-sm">
+        <button
+          type="button"
+          onClick={handleClear}
+          className="col-span-1 sm:col-span-1 w-full bg-red-600 text-white h-full p-2 font-bold text-xl hover:bg-red-500 rounded-sm">
           Clear
         </button>
       </div>
