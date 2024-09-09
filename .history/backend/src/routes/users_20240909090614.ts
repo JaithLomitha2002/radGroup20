@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import User from "../models/user";
 import Hotel from "../models/hotel";  // Adjust the import path as needed
-//import Booking from "../models/booking";  // Adjust the import path as needed
+// import Booking from "../models/booking";  // Adjust the import path as needed
 import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
@@ -99,22 +99,33 @@ router.delete('/delete-account', verifyToken, async (req: Request, res: Response
   try {
     const userId = req.userId;
 
+    // Find the user
     const user = await User.findById(userId);
     if (!user) {
       await session.abortTransaction();
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Delete user's hotels
     await Hotel.deleteMany({ userId: userId });
+
+    // Delete user's bookings
     //await Booking.deleteMany({ userId: userId });
+
+    // Delete the user
     await User.findByIdAndDelete(userId);
 
+    // Commit the transaction
     await session.commitTransaction();
 
+    // Clear the authentication cookie
     res.clearCookie('auth_token');
+
     res.status(200).json({ message: 'Account and associated data deleted successfully' });
   } catch (error) {
+    // If an error occurred, abort the transaction
     await session.abortTransaction();
+
     console.error('Error in delete-account route:', error);
     res.status(500).json({ message: 'An error occurred while deleting the account' });
   } finally {

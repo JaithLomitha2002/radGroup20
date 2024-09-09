@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { fetchCurrentUser, updateProfile } from "../api-client";
 import DeleteAccount from '../components/DeleteAccount';
 
+
+
 const Profile = () => {
   const [user, setUser] = useState({ firstName: "", lastName: "", email: "", telephone: "", address: "" });
   const [loading, setLoading] = useState(true);

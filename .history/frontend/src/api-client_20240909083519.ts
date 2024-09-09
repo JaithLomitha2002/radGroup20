@@ -295,31 +295,42 @@ export const updateProfile = async (profileData: { telephone: string; address: s
   }
 };
 
-export const deleteAccount = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    if (token) {
-      throw new Error('No authorization token found');
-    }
+// export const deleteAccount = async () => {
+//   try {
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//       throw new Error('No authorization token found');
+//     }
 
-    const response = await fetch(`${API_BASE_URL}/api/users/delete-account`, {
-      method: 'DELETE',
-      credentials: 'include', // Ensure credentials are included for consistency
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+//     const response = await fetch(`${API_BASE_URL}/api/users/delete-account`, {
+//       method: 'DELETE',
+//       credentials: 'include', // Ensure credentials are included for consistency
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//     });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to delete account: ${errorMessage}`);
-    }
+//     if (!response.ok) {
+//       const errorMessage = await response.text();
+//       throw new Error(`Failed to delete account: ${errorMessage}`);
+//     }
     
-    return response.json();
-  } catch (error) {
-    console.error("Error deleting account:", error);
-    throw error;
-  }
+//     return response.json();
+//   } catch (error) {
+//     console.error("Error deleting account:", error);
+//     throw error;
+//   }
+// };
+
+export const deleteAccount = async (): Promise<Response> => {
+  const response = await fetch(`${API_BASE_URL}/api/users/delete-account`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
+
+  return response;
 };
 

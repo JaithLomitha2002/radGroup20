@@ -298,7 +298,7 @@ export const updateProfile = async (profileData: { telephone: string; address: s
 export const deleteAccount = async () => {
   try {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (!token) {
       throw new Error('No authorization token found');
     }
 
@@ -322,4 +322,3 @@ export const deleteAccount = async () => {
     throw error;
   }
 };
-

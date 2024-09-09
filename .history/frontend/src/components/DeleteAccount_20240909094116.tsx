@@ -1,51 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deleteAccount, signOut } from '../api-client';
+import { deleteAccount } from '../api-client';
 import Modal from 'react-modal';
-import { useMutation, useQueryClient } from "react-query";
-import { useAppContext } from '../contexts/AppContext';
+import { useMutation } from "react-query";
 
 Modal.setAppElement('#root');
 
 const DeleteAccount: React.FC = () => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { showToast } = useAppContext();
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const deleteMutation = useMutation(deleteAccount, {
-    onSuccess: async () => {
-      showToast({ message: "Account deleted successfully", type: "SUCCESS" });
-      await signOutMutation.mutateAsync();
-    },
-    onError: (error: Error) => {
-      console.error('Error deleting account:', error);
-      showToast({ message: error.message || "An unexpected error occurred", type: "ERROR" });
-    },
-    onSettled: () => {
-      handleCloseModal();
-    }
-  });
-
-  const signOutMutation = useMutation(signOut, {
-    onSuccess: async () => {
-      await queryClient.invalidateQueries("validateToken");
-      showToast({ message: "Signed Out!", type: "SUCCESS" });
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteAccount();
+      setMessage('Account deleted successfully');
+      setMessageType('success');
+      // Handle successful deletion (e.g., redirect to home page, clear local storage, etc.)
       setTimeout(() => {
         navigate('/');
       }, 2000);
-    },
-    onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      setMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
+      setMessageType('error');
+    } finally {
+      setIsDeleting(false);
+      handleCloseModal();
     }
-  });
-
-  const handleDeleteAccount = () => {
-    deleteMutation.mutate();
   };
+
+  const mutation = useMutation(apiClient.signOut, {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries("validateToken");
+    },
+  });
 
   return (
     <div>
@@ -70,10 +65,10 @@ const DeleteAccount: React.FC = () => {
           <div className="flex justify-center gap-4">
             <button
               onClick={handleDeleteAccount}
-              disabled={deleteMutation.isLoading}
+              disabled={isDeleting}
               className="bg-red-500 text-white px-4 py-2 rounded-lg disabled:bg-red-300"
             >
-              {deleteMutation.isLoading ? 'Deleting...' : 'Yes, Delete My Account'}
+              {isDeleting ? 'Deleting...' : 'Yes, Delete My Account'}
             </button>
             <button
               onClick={handleCloseModal}
@@ -84,6 +79,16 @@ const DeleteAccount: React.FC = () => {
           </div>
         </div>
       </Modal>
+
+      {message && (
+        <div
+          className={`mt-4 w-full rounded-md py-2 px-3 ${
+            messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          } border`}
+        >
+          {message}
+        </div>
+      )}
     </div>
   );
 };

@@ -323,3 +323,15 @@ export const deleteAccount = async () => {
   }
 };
 
+// in api-client.ts
+
+// export const deleteAccount = async (): Promise<void> => {
+//   const response = await fetch(`${API_BASE_URL}/api/users/delete-account`, {
+//     method: 'DELETE',
+//     credentials: 'include',
+//   });
+
+//   if (!response.ok) {
+//     throw new Error('Failed to delete account');
+//   }
+// };

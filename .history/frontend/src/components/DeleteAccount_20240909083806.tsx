@@ -1,50 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deleteAccount, signOut } from '../api-client';
-import Modal from 'react-modal';
-import { useMutation, useQueryClient } from "react-query";
 import { useAppContext } from '../contexts/AppContext';
+import * as apiClient from '../api-client';
+import Modal from "react-modal";
 
-Modal.setAppElement('#root');
+  Modal.setAppElement("#root");
 
-const DeleteAccount: React.FC = () => {
+  const DeleteAccount: React.FC = () => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { showToast } = useAppContext();
+  const { setIsLoggedIn } = useAppContext();
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const deleteMutation = useMutation(deleteAccount, {
-    onSuccess: async () => {
-      showToast({ message: "Account deleted successfully", type: "SUCCESS" });
-      await signOutMutation.mutateAsync();
-    },
-    onError: (error: Error) => {
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await apiClient.deleteAccount();
+      setIsLoggedIn(false);
+      localStorage.removeItem('token');
+      navigate('/');
+    } catch (error) {
       console.error('Error deleting account:', error);
-      showToast({ message: error.message || "An unexpected error occurred", type: "ERROR" });
-    },
-    onSettled: () => {
+      alert(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
+    } finally {
+      setIsDeleting(false);
       handleCloseModal();
     }
-  });
-
-  const signOutMutation = useMutation(signOut, {
-    onSuccess: async () => {
-      await queryClient.invalidateQueries("validateToken");
-      showToast({ message: "Signed Out!", type: "SUCCESS" });
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-    },
-    onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
-    }
-  });
-
-  const handleDeleteAccount = () => {
-    deleteMutation.mutate();
   };
 
   return (
@@ -66,14 +50,20 @@ const DeleteAccount: React.FC = () => {
       >
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
           <h2 className="text-xl font-bold mb-4">Confirm Account Deletion</h2>
-          <p className="mb-4">Are you sure you want to delete your account? This action cannot be undone.</p>
+          <p className="mb-4">Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your data, including:</p>
+          <ul className="list-disc list-inside mb-4 text-left">
+            <li>Your profile information</li>
+            <li>Your bookings</li>
+            <li>Your hotel listings (if any)</li>
+            <li>Any reviews you've left</li>
+          </ul>
           <div className="flex justify-center gap-4">
             <button
               onClick={handleDeleteAccount}
-              disabled={deleteMutation.isLoading}
+              disabled={isDeleting}
               className="bg-red-500 text-white px-4 py-2 rounded-lg disabled:bg-red-300"
             >
-              {deleteMutation.isLoading ? 'Deleting...' : 'Yes, Delete My Account'}
+              {isDeleting ? 'Deleting...' : 'Yes, Delete My Account'}
             </button>
             <button
               onClick={handleCloseModal}

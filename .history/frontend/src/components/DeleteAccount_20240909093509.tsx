@@ -9,21 +9,25 @@ Modal.setAppElement('#root');
 
 const DeleteAccount: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { showToast } = useAppContext();
+  const { setIsLoggedIn } = useAppContext();
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
   const deleteMutation = useMutation(deleteAccount, {
     onSuccess: async () => {
-      showToast({ message: "Account deleted successfully", type: "SUCCESS" });
+      setMessage('Account deleted successfully');
+      setMessageType('success');
       await signOutMutation.mutateAsync();
     },
     onError: (error: Error) => {
       console.error('Error deleting account:', error);
-      showToast({ message: error.message || "An unexpected error occurred", type: "ERROR" });
+      setMessage(error.message || 'An unexpected error occurred');
+      setMessageType('error');
     },
     onSettled: () => {
       handleCloseModal();
@@ -32,14 +36,14 @@ const DeleteAccount: React.FC = () => {
 
   const signOutMutation = useMutation(signOut, {
     onSuccess: async () => {
+      setIsLoggedIn(false);
       await queryClient.invalidateQueries("validateToken");
-      showToast({ message: "Signed Out!", type: "SUCCESS" });
       setTimeout(() => {
         navigate('/');
       }, 2000);
     },
     onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
+      console.error('Error signing out:', error);
     }
   });
 
@@ -84,6 +88,16 @@ const DeleteAccount: React.FC = () => {
           </div>
         </div>
       </Modal>
+
+      {message && (
+        <div
+          className={`mt-4 w-full rounded-md py-2 px-3 ${
+            messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          } border`}
+        >
+          {message}
+        </div>
+      )}
     </div>
   );
 };

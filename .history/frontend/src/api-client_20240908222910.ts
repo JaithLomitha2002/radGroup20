@@ -272,54 +272,35 @@ export const deleteBookingById = async (bookingId: string) => {
   return response.json();
 };
 
-export const updateProfile = async (profileData: { telephone: string; address: string; }) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/users/me`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(profileData),
-    });
+export const updateProfile = async (profileData: { telephone: string; address: string;}) => {
+  const response = await fetch(`${API_BASE_URL}/api/users/me`, {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(profileData),
+  });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to update profile: ${errorMessage}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to update profile");
   }
+
+  return response.json();
 };
 
 export const deleteAccount = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    if (token) {
-      throw new Error('No authorization token found');
-    }
+  const response = await fetch(`${API_BASE_URL}/users/delete-account`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    },
+  });
 
-    const response = await fetch(`${API_BASE_URL}/api/users/delete-account`, {
-      method: 'DELETE',
-      credentials: 'include', // Ensure credentials are included for consistency
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to delete account: ${errorMessage}`);
-    }
-    
-    return response.json();
-  } catch (error) {
-    console.error("Error deleting account:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to delete account');
   }
+
+  return response.json();
 };
 
